@@ -11,5 +11,6 @@ namespace ChatRoom.Server.Model
         public string Id { get; set; }
         public string Password { get; set; }
         public string OwnerUserId { get; set; }
+        public string Link { get; set; }
     }
 }

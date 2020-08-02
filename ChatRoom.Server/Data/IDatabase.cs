@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace ChatRoom.Server.Data
 {
-    interface IDatabase
+    public interface IDatabase
     {
-        bool SignUp(UserModel user);
-        bool SignIn(UserModel user);
-        bool CreateRoom(ChatRoomModel chatRoom);
-        bool EnterRoom(string roomId, string userId, string password);
+        ChatRoomModel GetRoomInfo(string roomId);
+        UserModel GetUserInfo(UserModel user);
+        UserModel CreateUser(UserModel user);
+        ChatRoomModel CreateChatRoom(ChatRoomModel chatRoom);
     }
 }

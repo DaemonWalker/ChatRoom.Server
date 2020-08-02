@@ -13,13 +13,23 @@ namespace ChatRoom.Server.DistributeSession
     {
         const string SESSION_NAME = "NSessionId";
         private readonly RequestDelegate _next;
-        public DistributeSessionMiddleware(RequestDelegate next)
+        private readonly DistributeSessionConfig config;
+        public DistributeSessionMiddleware(RequestDelegate next, DistributeSessionConfig config)
         {
             this._next = next;
+            this.config = config;
         }
         public async Task InvokeAsync(HttpContext context)
         {
-            var sessionId = GetSessionId(context);
+            var sessionId = string.Empty;
+            if (this.config.IsApiMode)
+            {
+                sessionId = GetSessionIdByHeader(context);
+            }
+            else
+            {
+                GetSessionIdByCookies(context);
+            }
 
             var session = context.RequestServices.GetService<ISession>();
             session.SetSessionId(sessionId);
@@ -31,7 +41,7 @@ namespace ChatRoom.Server.DistributeSession
         private string GetSessionIdByCookies(HttpContext context)
         {
             var cookies = context.Request.Cookies;
-            var sessionId = string.Empty;
+            string sessionId = default;
             if (cookies.ContainsKey(SESSION_NAME))
             {
                 sessionId = cookies[SESSION_NAME];
@@ -45,7 +55,8 @@ namespace ChatRoom.Server.DistributeSession
         }
         private string GetSessionIdByHeader(HttpContext context)
         {
-            context.Request.Headers[HttpRequestHeader.Authorization.ToString()]
+            var authId = context.Request.Headers[HttpRequestHeader.Authorization.ToString()];
+            return authId;
         }
     }
 }

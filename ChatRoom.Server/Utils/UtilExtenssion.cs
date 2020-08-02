@@ -11,5 +11,9 @@ namespace ChatRoom.Server.Utils
         {
             return Convert.ToBase64String(bytes);
         }
+        public static bool IsDefault<T>(this T t)
+        {
+            return object.Equals(t, default(T));
+        }
     }
 }

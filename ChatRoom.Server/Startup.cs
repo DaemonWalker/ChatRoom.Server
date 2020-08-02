@@ -44,7 +44,7 @@ namespace ChatRoom.Server
 
             app.UseAuthorization();
 
-            app.UseDistributeSession();
+            app.UseDistributeSession(config => config.IsApiMode = true);
 
             app.UseEndpoints(endpoints =>
             {

@@ -2,6 +2,7 @@
 using CSRedis;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,7 @@ namespace ChatRoom.Server.DistributeSession
     public class DistributeSession : ISession
     {
         private readonly CSRedisClient redisDB;
+        private readonly ILogger<DistributeSession> logger;
         private const string CACHE_SET_NAME = "NSESSIONID_";
 
         public string Id { get; internal set; }
@@ -21,8 +23,10 @@ namespace ChatRoom.Server.DistributeSession
 
         public IEnumerable<string> Keys => redisDB.HKeys(this.Id);
 
-        public DistributeSession(IConfiguration config)
+        public DistributeSession(IConfiguration config, ILogger<DistributeSession> logger)
         {
+            this.logger = logger;
+
             var redisConfig = config.GetSection("Redis");
             var redisContr = $"{redisConfig["Address"]},defaultDatabase={redisConfig["DefaultDatabase"]},password={redisConfig["Password"]}";
             redisDB = new CSRedisClient(redisContr);
@@ -55,6 +59,10 @@ namespace ChatRoom.Server.DistributeSession
 
         public void Set(string key, byte[] value)
         {
+            if (key.IsValidSessionKey() == false)
+            {
+                throw new InvalidOperationException("SessionKey is invalid, cannot set value");
+            }
             redisDB.HSet(this.Id, key, value);
         }
 

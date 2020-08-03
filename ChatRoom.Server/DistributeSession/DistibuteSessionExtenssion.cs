@@ -10,21 +10,6 @@ namespace ChatRoom.Server.DistributeSession
 {
     public static class DistibuteSessionExtenssion
     {
-        internal static void SetSessionId(this ISession session, string sessionId)
-        {
-            if (session is DistributeSession && session != null)
-            {
-                (session as DistributeSession).Id = sessionId;
-            }
-            else if (session is not DistributeSession)
-            {
-                throw new InvalidOperationException($"This extenssion is only use for {typeof(DistributeSession).FullName}");
-            }
-            else
-            {
-                throw new InvalidOperationException("Session is null, can not set");
-            }
-        }
         internal static bool CheckServicesAreRegisted(this IApplicationBuilder app)
         {
             return app.ApplicationServices.GetService<ISession>() is DistributeSession;
@@ -43,23 +28,25 @@ namespace ChatRoom.Server.DistributeSession
 
         public static IApplicationBuilder UseDistributeSession(this IApplicationBuilder app)
         {
-            return UseDistributeSession(app, null);
-        }
-        public static IApplicationBuilder UseDistributeSession(this IApplicationBuilder app,Action<DistributeSessionConfig> configAction)
-        {
             if (app.CheckServicesAreRegisted() == false)
             {
                 throw new InvalidOperationException("Please use IServiceCollection.AddDistributeSession first");
             }
-            var config = new DistributeSessionConfig();
-            configAction?.Invoke(config);
-            app.UseMiddleware<DistributeSessionMiddleware>(config);
+            
+            app.UseMiddleware<DistributeSessionMiddleware>();
             return app;
         }
-        public static IServiceCollection AddDistributeSession(this IServiceCollection serviceDescriptors)
+        public static IServiceCollection AddDistributeSession(this IServiceCollection services,Action<DistributeSessionConfig> configAction)
         {
-            serviceDescriptors.AddTransient<ISession, DistributeSession>();
-            return serviceDescriptors;
+            var config = new DistributeSessionConfig();
+            configAction?.Invoke(config);
+            services.AddHttpContextAccessor();
+            services.AddTransient<ISession, DistributeSession>();
+            return services;
+        }
+        public static IServiceCollection AddDistributeSession(this IServiceCollection services)
+        {
+            return AddDistributeSession(services, null);
         }
     }
 }

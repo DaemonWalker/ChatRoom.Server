@@ -27,7 +27,7 @@ namespace ChatRoom.Server
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            services.AddDistributeSession();
+            services.AddDistributeSession(config => config.IsApiMode = true);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -44,7 +44,7 @@ namespace ChatRoom.Server
 
             app.UseAuthorization();
 
-            app.UseDistributeSession(config => config.IsApiMode = true);
+            app.UseDistributeSession();
 
             app.UseEndpoints(endpoints =>
             {

@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -16,6 +17,7 @@ namespace ChatRoom.Server.DistributeSession
         private readonly CSRedisClient redisDB;
         private readonly ILogger<DistributeSession> logger;
         private const string CACHE_SET_NAME = "NSESSIONID_";
+        const string SESSION_NAME = "NSessionId";
 
         public string Id { get; internal set; }
 
@@ -23,14 +25,23 @@ namespace ChatRoom.Server.DistributeSession
 
         public IEnumerable<string> Keys => redisDB.HKeys(this.Id);
 
-        public DistributeSession(IConfiguration config, ILogger<DistributeSession> logger)
+        public DistributeSession(IConfiguration config, ILogger<DistributeSession> logger,
+            IHttpContextAccessor httpContextAccessor, DistributeSessionConfig sessionConfig)
         {
             this.logger = logger;
-
             var redisConfig = config.GetSection("Redis");
             var redisContr = $"{redisConfig["Address"]},defaultDatabase={redisConfig["DefaultDatabase"]},password={redisConfig["Password"]}";
             redisDB = new CSRedisClient(redisContr);
             RedisHelper.Initialization(redisDB);
+
+            if (sessionConfig.IsApiMode)
+            {
+                this.Id = this.GetSessionIdByHeader(httpContextAccessor.HttpContext);
+            }
+            else
+            {
+                this.Id = this.GetSessionIdByCookies(httpContextAccessor.HttpContext);
+            }
         }
         public static string GenerateSessionId()
         {
@@ -78,6 +89,27 @@ namespace ChatRoom.Server.DistributeSession
                 value = null;
                 return false;
             }
+        }
+
+        protected virtual string GetSessionIdByCookies(HttpContext context)
+        {
+            var cookies = context.Request.Cookies;
+            string sessionId = default;
+            if (cookies.ContainsKey(SESSION_NAME))
+            {
+                sessionId = cookies[SESSION_NAME];
+            }
+            else
+            {
+                sessionId = DistributeSession.GenerateSessionId();
+                context.Response.Cookies.Append(SESSION_NAME, sessionId);
+            }
+            return sessionId;
+        }
+        protected virtual string GetSessionIdByHeader(HttpContext context)
+        {
+            var authId = context.Request.Headers[HttpRequestHeader.Authorization.ToString()];
+            return authId;
         }
     }
 }

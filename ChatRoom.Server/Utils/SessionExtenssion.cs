@@ -17,7 +17,7 @@ namespace ChatRoom.Server.Utils
         }
         public static void SetUserId(this ISession session,UserModel user)
         {
-            session.SetString(KEY_USERID, user.Id);
+            session.SetString(KEY_USERID, user.UserId);
         }
     }
 }

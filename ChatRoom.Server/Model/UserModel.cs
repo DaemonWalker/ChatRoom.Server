@@ -9,9 +9,9 @@ namespace ChatRoom.Server.Model
     {
         public string Account { get; set; }
         public string Password { get; set; }
-        public string NickName { get; set; }
+        public string UserName { get; set; }
         public int Level { get; set; }
         public bool IsTempUser { get; set; }
-        public string Id { get; set; }
+        public string UserId { get; set; }
     }
 }

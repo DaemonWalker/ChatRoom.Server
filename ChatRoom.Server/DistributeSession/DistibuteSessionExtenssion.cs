@@ -42,6 +42,7 @@ namespace ChatRoom.Server.DistributeSession
             configAction?.Invoke(config);
             services.AddHttpContextAccessor();
             services.AddTransient<ISession, DistributeSession>();
+            services.AddSingleton(config);
             return services;
         }
         public static IServiceCollection AddDistributeSession(this IServiceCollection services)

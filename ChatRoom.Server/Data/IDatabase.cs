@@ -9,8 +9,9 @@ namespace ChatRoom.Server.Data
     public interface IDatabase
     {
         ChatRoomModel GetRoomInfo(string roomId);
-        UserModel GetUserInfo(UserModel user);
+        UserModel UserSignIn(UserModel user);
         UserModel CreateUser(UserModel user);
         ChatRoomModel CreateChatRoom(ChatRoomModel chatRoom);
+        List<ChatRoomModel> GetRoomInfoByUser(string userId);
     }
 }

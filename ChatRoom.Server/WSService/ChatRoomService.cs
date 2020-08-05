@@ -11,22 +11,20 @@ namespace ChatRoom.Server.WSService
     public class ChatRoomService
     {
         private readonly WebSocketServer server;
-        private readonly string redisConnStr;
-        public ChatRoomService(IConfiguration config, int port = 7181)
+        private readonly ChatRoomConfig config;
+        public ChatRoomService(ChatRoomConfig config)
         {
-            server = new WebSocketServer(port);
+            this.config = config;
+            server = new WebSocketServer(config.Port);
             server.Start();
 
-            var redisConfig = config.GetSection("Redis");
-            redisConnStr = $"{redisConfig["Address"]},defaultDatabase={redisConfig["DefaultDatabase"]},password={redisConfig["Password"]}";
         }
         public bool OpenRoom(string roomId)
         {
             try
             {
 #pragma warning disable CS0618 // 这个库好长时间不更新了 过时了就过时了吧 -_-||
-                var behavior = new ChatServiceBehavior(roomId, this.redisConnStr);
-                server.AddWebSocketService($"/{roomId}", () => new ChatServiceBehavior(roomId, redisConnStr));
+                server.AddWebSocketService($"/{roomId}", () => new ChatServiceBehavior(roomId, config.RedisConnectionString));
 #pragma warning restore CS0618 // 这个库好长时间不更新了 过时了就过时了吧 -_-||
                 return true;
             }

@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ChatRoom.Server.DistributeSession
+namespace ChatRoom.Server.WSService
 {
-    public class DistributeSessionConfig
+    public class ChatRoomConfig
     {
-        public bool IsApiMode { get; set; } = false;
         public string RedisConnectionString { get; set; }
+        public int Port { get; set; }
     }
 }

@@ -23,14 +23,24 @@ namespace ChatRoom.Server.Controllers
         [HttpPost]
         public string CreateTemp()
         {
+            var tempUserId = Guid.NewGuid().ToString("N");
             this.HttpContext.Session.SetUserIsTemp();
+            this.HttpContext.Session.SetUserId(tempUserId);
             return this.HttpContext.Session.Id;
         }
 
         [HttpPost]
-        public void SignUp([FromBody]UserModel user)
+        public string SignUp([FromBody] UserModel user)
         {
-            database.CreateUser(user);
+            try
+            {
+                database.CreateUser(user);
+                return "OK";
+            }
+            catch
+            {
+                return "Error";
+            }
         }
     }
 }

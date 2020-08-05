@@ -10,7 +10,8 @@ namespace ChatRoom.Server.Model
         public string Name { get; set; }
         public string Id { get; set; }
         public string Password { get; set; }
-        public string OwnerUserId { get; set; }
-        public string Link { get; set; }
+        public string UserId { get; set; }
+        public string Url { get; set; }
+        public bool IsPublic { get; set; }
     }
 }

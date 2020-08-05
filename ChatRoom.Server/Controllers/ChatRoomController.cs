@@ -1,5 +1,6 @@
 ﻿using ChatRoom.Server.Data;
 using ChatRoom.Server.Model;
+using ChatRoom.Server.Utils;
 using ChatRoom.Server.WSService;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -25,7 +26,7 @@ namespace ChatRoom.Server.Controllers
         {
             var checkResult = false;
             var roomInfo = database.GetRoomInfo(roomId);
-            if (roomInfo.OwnerUserId == userId ||
+            if (roomInfo.UserId == userId ||
                 roomInfo.Password == password)
             {
                 checkResult = true;
@@ -36,15 +37,26 @@ namespace ChatRoom.Server.Controllers
             }
             else
             {
-                return roomInfo.Link;
+                return roomInfo.Url;
             }
+        }
+
+        [HttpGet]
+        public List<ChatRoomModel> GetCurrentUserRooms()
+        {
+            if (this.HttpContext.Session.GetUserIsRegisted() == false)
+            {
+                return Enumerable.Empty<ChatRoomModel>().ToList();
+            }
+            var userId = this.HttpContext.Session.GetUserId();
+            return database.GetRoomInfoByUser(userId);
         }
 
         [HttpPost]
         public ChatRoomModel CreateRoom(ChatRoomModel chatRoom)
         {
             chatRoom = database.CreateChatRoom(chatRoom);
-            wsService.OpenRoom(chatRoom.Link);
+            wsService.OpenRoom(chatRoom.Url);
             return chatRoom;
         }
     }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ChatRoom.Server.DistributeSession;
+using ChatRoom.Server.Utils;
 using ChatRoom.Server.WSService;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -28,12 +29,20 @@ namespace ChatRoom.Server
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            services.AddDistributeSession(config => config.IsApiMode = true);
-            services.AddChatRoom();
+            services.AddDistributeSession(config =>
+            {
+                config.IsApiMode = true;
+                config.RedisConnectionString = Configuration.GetRedisConnectionString();
+            });
+            services.AddChatRoom(config =>
+            {
+                config.Port = 7181;
+                config.RedisConnectionString = Configuration.GetRedisConnectionString();
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env,IServiceProvider service)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider service)
         {
             if (env.IsDevelopment())
             {

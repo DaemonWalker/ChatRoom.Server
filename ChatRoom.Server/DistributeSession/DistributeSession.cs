@@ -25,13 +25,10 @@ namespace ChatRoom.Server.DistributeSession
 
         public IEnumerable<string> Keys => redisDB.HKeys(this.Id);
 
-        public DistributeSession(IConfiguration config, ILogger<DistributeSession> logger,
-            IHttpContextAccessor httpContextAccessor, DistributeSessionConfig sessionConfig)
+        public DistributeSession(IHttpContextAccessor httpContextAccessor, ILogger<DistributeSession> logger, DistributeSessionConfig sessionConfig)
         {
             this.logger = logger;
-            var redisConfig = config.GetSection("Redis");
-            var redisContr = $"{redisConfig["Address"]},defaultDatabase={redisConfig["DefaultDatabase"]},password={redisConfig["Password"]}";
-            redisDB = new CSRedisClient(redisContr);
+            redisDB = new CSRedisClient(sessionConfig.RedisConnectionString);
             RedisHelper.Initialization(redisDB);
 
             if (sessionConfig.IsApiMode)

@@ -16,8 +16,11 @@ namespace ChatRoom.Server.WSService
             return app;
         }
 
-        public static IServiceCollection AddChatRoom(this IServiceCollection services)
+        public static IServiceCollection AddChatRoom(this IServiceCollection services, Action<ChatRoomConfig> configAction)
         {
+            var config = new ChatRoomConfig();
+            configAction.Invoke(config);
+            services.AddSingleton(config);
             services.AddSingleton<ChatRoomService>();
             return services;
         }

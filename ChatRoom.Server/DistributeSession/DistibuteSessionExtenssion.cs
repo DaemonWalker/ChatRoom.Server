@@ -26,6 +26,7 @@ namespace ChatRoom.Server.DistributeSession
             }
         }
 
+        
         public static IApplicationBuilder UseDistributeSession(this IApplicationBuilder app)
         {
             if (app.CheckServicesAreRegisted() == false)
@@ -45,7 +46,13 @@ namespace ChatRoom.Server.DistributeSession
             services.AddSingleton(config);
             return services;
         }
-        public static IServiceCollection AddDistributeSession(this IServiceCollection services)
+
+        /// <summary>
+        /// 这个方法在没找到怎么把Redis抽出去之前先禁用
+        /// </summary>
+        /// <param name="app"></param>
+        /// <returns></returns>
+        private static IServiceCollection AddDistributeSession(this IServiceCollection services)
         {
             return AddDistributeSession(services, null);
         }

@@ -23,13 +23,14 @@ namespace ChatRoom.Server.Controllers
         [HttpPost]
         public string SignIn([FromBody]UserModel user)
         {
-            user = database.GetUserInfo(user);
+            user = database.UserSignIn(user);
             if (user.IsDefault())
             {
                 return string.Empty;
             }
 
-            this.HttpContext.Session.SetUserId(user);
+            this.HttpContext.Session.SetUserIsRegisted();
+            this.HttpContext.Session.SetUserId(user.UserId);
             return this.HttpContext.Session.Id;
         }
 

@@ -11,17 +11,20 @@ namespace ChatRoom.Server.Utils
     {
         const string KEY_USERREGISTED = "IsRegisted";
         const string KEY_USERID = "UserId";
-        public static void SetUserIsTemp(this ISession session)
+        public static ISession SetUserIsTemp(this ISession session)
         {
             session.SetInt32(KEY_USERREGISTED, 0);
+            return session;
         }
-        public static void SetUserIsRegisted(this ISession session)
+        public static ISession SetUserIsRegisted(this ISession session)
         {
             session.SetInt32(KEY_USERREGISTED, 1);
+            return session;
         }
-        public static void SetUserId(this ISession session, string userId)
+        public static ISession SetUserId(this ISession session, string userId)
         {
             session.SetString(KEY_USERID, userId);
+            return session;
         }
         public static string GetUserId(this ISession session)
         {

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ChatRoom.Server.Data
 {
-    public interface IDatabase
+    public interface IDatabase : IDisposable
     {
         ChatRoomModel GetRoomInfo(string roomId);
         UserModel UserSignIn(UserModel user);

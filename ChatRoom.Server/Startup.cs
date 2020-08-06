@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ChatRoom.Server.Data;
 using ChatRoom.Server.DistributeSession;
 using ChatRoom.Server.Utils;
 using ChatRoom.Server.WSService;
@@ -39,6 +40,8 @@ namespace ChatRoom.Server
                 config.Port = 7181;
                 config.RedisConnectionString = Configuration.GetRedisConnectionString();
             });
+
+            services.AddScoped<IDatabase, MySqlDatabase>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

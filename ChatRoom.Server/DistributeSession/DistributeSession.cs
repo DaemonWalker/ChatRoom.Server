@@ -16,6 +16,7 @@ namespace ChatRoom.Server.DistributeSession
     {
         private readonly CSRedisClient redisDB;
         private readonly ILogger<DistributeSession> logger;
+        private readonly DistributeSessionConfig config;
         private const string CACHE_SET_NAME = "NSESSIONID_";
         const string SESSION_NAME = "NSessionId";
 
@@ -28,6 +29,7 @@ namespace ChatRoom.Server.DistributeSession
         public DistributeSession(IHttpContextAccessor httpContextAccessor, ILogger<DistributeSession> logger, DistributeSessionConfig sessionConfig)
         {
             this.logger = logger;
+            this.config = sessionConfig;
             redisDB = new CSRedisClient(sessionConfig.RedisConnectionString);
             RedisHelper.Initialization(redisDB);
 
@@ -79,6 +81,7 @@ namespace ChatRoom.Server.DistributeSession
             if (redisDB.HExists(this.Id, key))
             {
                 value = redisDB.HGet<byte[]>(this.Id, key);
+                redisDB.ExpireAsync(this.Id, config.ExpireSeconds);
                 return true;
             }
             else

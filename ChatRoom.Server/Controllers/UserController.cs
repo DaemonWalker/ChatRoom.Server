@@ -24,8 +24,10 @@ namespace ChatRoom.Server.Controllers
         public string CreateTemp()
         {
             var tempUserId = Guid.NewGuid().ToString("N");
-            this.HttpContext.Session.SetUserIsTemp();
-            this.HttpContext.Session.SetUserId(tempUserId);
+            this.HttpContext.Session
+                .SetUserIsTemp()
+                .SetUserId(tempUserId);
+
             return this.HttpContext.Session.Id;
         }
 

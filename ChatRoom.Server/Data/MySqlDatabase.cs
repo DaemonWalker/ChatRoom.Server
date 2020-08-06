@@ -11,6 +11,7 @@ namespace ChatRoom.Server.Data
 {
     public class MySqlDatabase : IDatabase
     {
+        #region sql
         const string INSERT_CHATROOM = @"
 INSERT INTO chatroom ( NAME, UserId, IsPublic, PASSWORD, Url )
 VALUES
@@ -78,8 +79,10 @@ FROM
 	chatroom t 
 WHERE
 	t.UserId = '{0}'";
+        #endregion
 
         private readonly MySqlConnection conn;
+        private bool disposed = false;
         public MySqlDatabase(IConfiguration config)
         {
             var section = config.GetSection("Mysql");
@@ -140,6 +143,23 @@ WHERE
             else
             {
                 return default;
+            }
+        }
+
+        public void Dispose()
+        {
+            this.Dispose(true);
+        }
+
+        protected virtual void Dispose(bool dispoing)
+        {
+            if (disposed == false)
+            {
+                this.disposed = true;
+                if (dispoing)
+                {
+                    this.conn.Close();
+                }
             }
         }
     }

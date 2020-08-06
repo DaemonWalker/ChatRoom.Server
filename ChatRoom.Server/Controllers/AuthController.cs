@@ -29,8 +29,10 @@ namespace ChatRoom.Server.Controllers
                 return string.Empty;
             }
 
-            this.HttpContext.Session.SetUserIsRegisted();
-            this.HttpContext.Session.SetUserId(user.UserId);
+            this.HttpContext.Session
+                .SetUserIsRegisted()
+                .SetUserId(user.UserId);
+
             return this.HttpContext.Session.Id;
         }
 

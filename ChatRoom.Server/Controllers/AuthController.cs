@@ -21,19 +21,24 @@ namespace ChatRoom.Server.Controllers
         }
 
         [HttpPost]
-        public string SignIn([FromBody]UserModel user)
+        public LoginResponseModel SignIn([FromBody] UserModel user)
         {
+            var result = new LoginResponseModel();
             user = database.UserSignIn(user);
             if (user.IsDefault())
             {
-                return string.Empty;
+                return result;
             }
 
             this.HttpContext.Session
                 .SetUserIsRegisted()
-                .SetUserId(user.UserId);
+                .SetUserId(user.Id);
 
-            return this.HttpContext.Session.Id;
+            result.UserId = user.Id;
+            result.UserName = user.Name;
+            result.SessionId = this.HttpContext.Session.Id;
+
+            return result;
         }
 
         [HttpPost]

@@ -30,6 +30,7 @@ namespace ChatRoom.Server
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.AddCors(options => options.AddDefaultPolicy(builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
             services.AddDistributeSession(config =>
             {
                 config.IsApiMode = true;
@@ -55,6 +56,8 @@ namespace ChatRoom.Server
             //app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseCors();
 
             app.UseAuthorization();
 

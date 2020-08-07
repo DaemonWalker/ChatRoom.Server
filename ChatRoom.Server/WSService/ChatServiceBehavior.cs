@@ -37,7 +37,7 @@ namespace ChatRoom.Server.WSService
 
             if (model.User.IsTempUser)
             {
-                this.redisDB.ZAddAsync(RANKNAME_SPEACH, (1, model.User.UserId));
+                this.redisDB.ZAddAsync(RANKNAME_SPEACH, (1, model.User.Id));
             }
 
             var json = Serialize(model);

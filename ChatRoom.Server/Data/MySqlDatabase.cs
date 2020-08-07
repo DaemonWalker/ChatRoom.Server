@@ -52,7 +52,7 @@ WHERE
 SELECT
 	* 
 FROM
-	USER t 
+	User t 
 WHERE
 	t.account = '{0}'";
 
@@ -86,7 +86,7 @@ WHERE
         public MySqlDatabase(IConfiguration config)
         {
             var section = config.GetSection("Mysql");
-            conn = new MySqlConnection($"Server={config["Server"]};Database={config["Database"]};User={config["User"]};Password={config["Password"]}");
+            conn = new MySqlConnection($"Server={section["Server"]};Database={section["Database"]};User={section["User"]};Password={section["Password"]}");
             conn.Open();
         }
 

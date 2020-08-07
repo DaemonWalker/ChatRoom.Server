@@ -108,7 +108,11 @@ namespace ChatRoom.Server.DistributeSession
         }
         protected virtual string GetSessionIdByHeader(HttpContext context)
         {
-            var authId = context?.Request.Headers[HttpRequestHeader.Authorization.ToString()] ?? string.Empty;
+            var authId = context?.Request.Headers[HttpRequestHeader.Authorization.ToString()];
+            if (string.IsNullOrWhiteSpace(authId))
+            {
+                authId = DistributeSession.GenerateSessionId();
+            }
             return authId;
         }
     }

@@ -43,6 +43,10 @@ namespace ChatRoom.Server
             });
 
             services.AddScoped<IDatabase, MySqlDatabase>();
+
+            services.AddLogging(config => config.AddConsole());
+
+            services.AddScoped<IStatistics, Statistics>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -53,7 +57,7 @@ namespace ChatRoom.Server
                 app.UseDeveloperExceptionPage();
             }
 
-            //app.UseHttpsRedirection();
+            app.UseHttpsRedirection();
 
             app.UseRouting();
 

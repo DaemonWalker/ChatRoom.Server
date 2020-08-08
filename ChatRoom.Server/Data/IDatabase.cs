@@ -13,5 +13,6 @@ namespace ChatRoom.Server.Data
         UserModel CreateUser(UserModel user);
         ChatRoomModel CreateChatRoom(ChatRoomModel chatRoom);
         List<ChatRoomModel> GetRoomInfoByUser(string userId);
+        List<UserModel> GetUsers(IEnumerable<string> ids);
     }
 }

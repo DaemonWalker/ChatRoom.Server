@@ -1,5 +1,6 @@
 ﻿using ChatRoom.Server.Model;
 using CSRedis;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,10 +17,12 @@ namespace ChatRoom.Server.WSService
         private readonly JsonSerializerOptions jsonSerializerOptions;
         private readonly CSRedisClient redisDB;
         private const string RANKNAME_SPEACH = "Speach";
+        private readonly ILogger<ChatServiceBehavior> logger;
         //protected WebSocketSessionManager aliveSession =>this.Sessions.Sessions.Where(p=>p.Context.a)
 
         public ChatServiceBehavior(string roomId, string redisConnStr)
         {
+            this.logger = logger;
             this.roomId = roomId;
             jsonSerializerOptions = new JsonSerializerOptions()
             {
@@ -37,7 +40,7 @@ namespace ChatRoom.Server.WSService
 
             if (model.User.IsTempUser)
             {
-                this.redisDB.ZAddAsync(RANKNAME_SPEACH, (1, model.User.Id));
+                this.redisDB.ZIncrByAsync(RANKNAME_SPEACH, model.User.UserId, 1);
             }
 
             var json = Serialize(model);
@@ -76,7 +79,7 @@ namespace ChatRoom.Server.WSService
         }
         protected virtual string Serialize(MessageModel message)
         {
-            return JsonSerializer.Serialize<MessageModel>(message, jsonSerializerOptions);
+            return JsonSerializer.Serialize(message, jsonSerializerOptions);
         }
     }
 }

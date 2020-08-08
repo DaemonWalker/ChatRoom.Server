@@ -42,9 +42,17 @@ namespace ChatRoom.Server.Controllers
         }
 
         [HttpPost]
-        public void SignOut()
+        public bool SignOut()
         {
-            this.HttpContext.Session.Clear();
+            try
+            {
+                this.HttpContext.Session.Clear();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
     }
 }

@@ -79,6 +79,14 @@ FROM
 	chatroom t 
 WHERE
 	t.UserId = '{0}'";
+
+        const string QUERY_USER_IDS = @"
+SELECT
+	* 
+FROM
+	User t 
+WHERE
+	t.Id in ({0})";
         #endregion
 
         private readonly MySqlConnection conn;
@@ -146,9 +154,17 @@ WHERE
             }
         }
 
+        public List<UserModel> GetUsers(IEnumerable<string> ids)
+        {
+            var parm = string.Join(",", ids.Select(p => $"'{p}'").ToArray());
+
+            return conn.Query<UserModel>(string.Format(QUERY_USER_IDS, parm)).ToList();
+        }
+
         public void Dispose()
         {
             this.Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         protected virtual void Dispose(bool dispoing)

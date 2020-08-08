@@ -10,6 +10,6 @@ namespace ChatRoom.Server.Model
         public string Content { get; set;}
         public string Date { get; set; }
         public bool IsNotify { get; set; }
-        public UserModel User { get; set; }
+        public ChatUserModel User { get; set; }
     }
 }

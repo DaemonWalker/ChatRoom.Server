@@ -6,31 +6,28 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
-using WebSocketSharp;
-using WebSocketSharp.Server;
+using WebSocketSharp.NetCore;
+using WebSocketSharp.NetCore.Server;
+using static CSRedis.CSRedisClient;
 
 namespace ChatRoom.Server.WSService
 {
     public class ChatServiceBehavior : WebSocketBehavior
     {
-        private readonly string roomId;
+        public string RoomId { get; internal set; }
         private readonly JsonSerializerOptions jsonSerializerOptions;
-        private readonly CSRedisClient redisDB;
-        private const string RANKNAME_SPEACH = "Speach";
+        private readonly ChatRoomRedisService subscribeService;
         private readonly ILogger<ChatServiceBehavior> logger;
-        //protected WebSocketSessionManager aliveSession =>this.Sessions.Sessions.Where(p=>p.Context.a)
 
-        public ChatServiceBehavior(string roomId, string redisConnStr)
+        public ChatServiceBehavior(ILogger<ChatServiceBehavior> logger, ChatRoomRedisService subscribeService)
         {
             this.logger = logger;
-            this.roomId = roomId;
+            this.subscribeService = subscribeService;
             jsonSerializerOptions = new JsonSerializerOptions()
             {
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
                 IgnoreNullValues = true
             };
-            this.redisDB = new CSRedisClient(redisConnStr);
-            this.redisDB.SubscribeListBroadcast(this.GetChannelId(), new Random().Next().ToString(), msg => this.Broadcast(msg));
         }
 
         protected override void OnMessage(MessageEventArgs e)
@@ -40,13 +37,13 @@ namespace ChatRoom.Server.WSService
 
             if (model.User.IsTempUser)
             {
-                this.redisDB.ZIncrByAsync(RANKNAME_SPEACH, model.User.UserId, 1);
+                this.subscribeService.AddSpeach(model.User.UserId);
             }
 
             var json = Serialize(model);
-            this.redisDB.PublishAsync(this.GetChannelId(), json);
+            this.subscribeService.SendMessage(this.GetChannelId(), json);
 
-            Sessions.Broadcast(json);
+            //Sessions.Broadcast(json);
         }
         protected override void OnOpen()
         {
@@ -55,22 +52,25 @@ namespace ChatRoom.Server.WSService
         protected override void OnClose(CloseEventArgs e)
         {
             base.OnClose(e);
+            this.subscribeService.RemoveBehavior(this);
         }
         protected override void OnError(ErrorEventArgs e)
         {
             base.OnError(e);
+            this.subscribeService.RemoveBehavior(this);
         }
         public void Broadcast(string json)
         {
             if (string.IsNullOrEmpty(json) == false)
             {
+                logger.LogInformation(json);
                 Sessions?.Broadcast(json);
             }
         }
 
         protected virtual string GetChannelId()
         {
-            return this.roomId;
+            return this.RoomId;
         }
 
         protected virtual MessageModel Deserialize(string json)

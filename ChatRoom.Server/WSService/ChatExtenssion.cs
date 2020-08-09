@@ -20,8 +20,11 @@ namespace ChatRoom.Server.WSService
         {
             var config = new ChatRoomConfig();
             configAction.Invoke(config);
-            services.AddSingleton(config);
-            services.AddSingleton<ChatRoomService>();
+            services
+                .AddSingleton(config)
+                .AddSingleton<ChatRoomService>()
+                .AddTransient<ChatServiceBehavior>()
+                .AddSingleton<ChatRoomRedisService>();
             return services;
         }
     }

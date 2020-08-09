@@ -38,15 +38,15 @@ namespace ChatRoom.Server
             });
             services.AddChatRoom(config =>
             {
-                config.Port = 7181;
+                config.Port = Convert.ToInt32(Configuration["WSPort"]);
                 config.RedisConnectionString = Configuration.GetRedisConnectionString();
             });
 
             services.AddScoped<IDatabase, MySqlDatabase>();
+            services.AddScoped<IStatistics, Statistics>();
 
             services.AddLogging(config => config.AddConsole());
 
-            services.AddScoped<IStatistics, Statistics>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

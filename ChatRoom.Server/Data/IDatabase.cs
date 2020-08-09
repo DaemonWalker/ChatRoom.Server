@@ -14,5 +14,7 @@ namespace ChatRoom.Server.Data
         ChatRoomModel CreateChatRoom(ChatRoomModel chatRoom);
         List<ChatRoomModel> GetRoomInfoByUser(string userId);
         List<UserModel> GetUsers(IEnumerable<string> ids);
+        int CountUserName(string userName);
+        int CountUserAccount(string userAccount);
     }
 }

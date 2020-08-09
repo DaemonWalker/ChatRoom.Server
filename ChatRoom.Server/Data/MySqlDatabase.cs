@@ -48,6 +48,22 @@ WHERE
 	t.Account = '{0}' 
 	AND t.NAME = '{1}'";
 
+        const string COUNT_USERNAME = @"
+SELECT
+	count( 1 ) 
+FROM
+	`User` t 
+WHERE
+	t.`Name` = '{0}'";
+
+        const string COUNT_USERACCOUNT = @"
+ SELECT
+	count( 1 ) 
+FROM
+	`User` t 
+WHERE
+	t.Account = '{0}' ";
+
         const string QUERY_USER_ACCOUNT = @"
 SELECT
 	* 
@@ -117,12 +133,14 @@ WHERE
 
         public UserModel CreateUser(UserModel user)
         {
+            var trans = conn.BeginTransaction();
             var count = conn.QueryFirst<int>(string.Format(COUNT_USER, user.Account, user.Name));
             if (count == 0)
             {
-                conn.Execute(string.Format(
-                    INSERT_USER,
-                    user.Account, user.Name, user.Password, 1));
+                conn.Execute(
+                    string.Format(INSERT_USER, user.Account, user.Name, user.Password, 1),
+                    trans);
+                trans.Commit();
                 return conn.QueryFirst<UserModel>(string.Format(QUERY_USER_ACCOUNT, user.Account));
             }
             else
@@ -159,6 +177,16 @@ WHERE
             var parm = string.Join(",", ids.Select(p => $"'{p}'").ToArray());
 
             return conn.Query<UserModel>(string.Format(QUERY_USER_IDS, parm)).ToList();
+        }
+
+        public int CountUserName(string userName)
+        {
+            return conn.QueryFirst<int>(string.Format(COUNT_USERNAME, userName));
+        }
+
+        public int CountUserAccount(string userAccount)
+        {
+            return conn.QueryFirst<int>(string.Format(COUNT_USERACCOUNT, userAccount));
         }
 
         public void Dispose()

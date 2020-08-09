@@ -23,7 +23,7 @@ namespace ChatRoom.Server.Data
         }
         public List<SpeachStatisticsModel> SpeachRank(int count)
         {
-            var rank = redisClient.ZRangeWithScores(Statistics.RANKNAME_SPEACH, 0, count);
+            var rank = redisClient.ZRangeWithScores(Statistics.RANKNAME_SPEACH, 0, count).OrderByDescending(p => p.score);
             var userIds = rank.Select(p => p.member).ToList();
             var users = this.database.GetUsers(userIds);
             return rank
@@ -32,7 +32,8 @@ namespace ChatRoom.Server.Data
                 {
                     Count = Convert.ToInt32(data.score),
                     UserName = users.FirstOrDefault(p => p.Id == data.member).Name,
-                    Rank = index + 1
+                    Rank = index + 1,
+                    Percent = Convert.ToInt32(data.score * 100 / rank.First().score)
                 })
                 .ToList();
         }
